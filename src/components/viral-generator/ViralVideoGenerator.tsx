@@ -15,11 +15,19 @@ import { steps } from './config/steps';
 export const ViralVideoGenerator: React.FC = () => {
   const {
     state,
+    setCurrentStep,
     setUploadedImage,
     setTextPrompt,
     startProcess,
     resetProcess
   } = useViralGenerator();
+
+  const handleStepClick = (stepId: number) => {
+    // Only allow navigation to current step or previous steps
+    if (stepId <= state.currentStep) {
+      setCurrentStep(stepId);
+    }
+  };
 
   const renderCurrentStep = () => {
     switch(state.currentStep) {
@@ -63,54 +71,73 @@ export const ViralVideoGenerator: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {/* Mobile: Vertical Steps */}
           <div className="block sm:hidden space-y-4">
-            {steps.map((step) => (
-              <div key={step.id} className="flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                  state.currentStep > step.id
-                    ? 'bg-gradient-to-r from-sage-green to-sunshine-yellow border-sage-green'
-                    : state.currentStep === step.id
-                      ? `bg-gradient-to-r ${step.color} border-white shadow-lg`
-                      : 'bg-white border-gray-300'
-                }`}>
-                  <step.icon className={`w-6 h-6 ${
-                    state.currentStep >= step.id ? 'text-white' : 'text-gray-500'
-                  }`} />
-                </div>
-                <div className="flex-1">
-                  <div className={`font-retro font-semibold text-sm ${
-                    state.currentStep >= step.id ? 'text-electric-blue' : 'text-deep-navy/70'
+            {steps.map((step) => {
+              const isClickable = step.id <= state.currentStep;
+              return (
+                <div 
+                  key={step.id} 
+                  className={`flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm transition-all duration-300 ${
+                    isClickable ? 'cursor-pointer hover:bg-white/90 hover:shadow-lg' : 'cursor-default'
+                  }`}
+                  onClick={() => isClickable && handleStepClick(step.id)}
+                >
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    state.currentStep > step.id
+                      ? 'bg-gradient-to-r from-sage-green to-sunshine-yellow border-sage-green'
+                      : state.currentStep === step.id
+                        ? `bg-gradient-to-r ${step.color} border-white shadow-lg`
+                        : 'bg-white border-gray-300'
                   }`}>
-                    {step.title}
+                    <step.icon className={`w-6 h-6 ${
+                      state.currentStep >= step.id ? 'text-white' : 'text-gray-500'
+                    }`} />
                   </div>
-                  <div className={`text-xs ${
-                    state.currentStep >= step.id ? 'text-electric-blue/70' : 'text-deep-navy/50'
-                  }`}>
-                    {step.description}
+                  <div className="flex-1">
+                    <div className={`font-retro font-semibold text-sm ${
+                      state.currentStep >= step.id ? 'text-electric-blue' : 'text-deep-navy/70'
+                    }`}>
+                      {step.title}
+                    </div>
+                    <div className={`text-xs ${
+                      state.currentStep >= step.id ? 'text-electric-blue/70' : 'text-deep-navy/50'
+                    }`}>
+                      {step.description}
+                    </div>
                   </div>
+                  {isClickable && (
+                    <div className="text-xs text-electric-blue/70 font-medium">
+                      {state.currentStep === step.id ? 'Current' : 'Click to review'}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Desktop: Horizontal Steps */}
           <div className="hidden sm:block">
             <div className="flex justify-center items-center space-x-4 lg:space-x-6">
-              {steps.map((step, index) => (
-                <React.Fragment key={step.id}>
-                  <div className="flex-shrink-0">
-                    <StepIndicator 
-                      step={step} 
-                      isActive={state.currentStep === step.id}
-                      isCompleted={state.currentStep > step.id}
-                    />
-                  </div>
-                  {index < steps.length - 1 && (
+              {steps.map((step, index) => {
+                const isClickable = step.id <= state.currentStep;
+                return (
+                  <React.Fragment key={step.id}>
                     <div className="flex-shrink-0">
-                      <ProgressConnector isCompleted={state.currentStep > step.id} />
+                      <StepIndicator 
+                        step={step} 
+                        isActive={state.currentStep === step.id}
+                        isCompleted={state.currentStep > step.id}
+                        isClickable={isClickable}
+                        onClick={() => handleStepClick(step.id)}
+                      />
                     </div>
-                  )}
-                </React.Fragment>
-              ))}
+                    {index < steps.length - 1 && (
+                      <div className="flex-shrink-0">
+                        <ProgressConnector isCompleted={state.currentStep > step.id} />
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
           </div>
         </div>

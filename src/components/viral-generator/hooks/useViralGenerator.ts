@@ -48,16 +48,18 @@ export const useViralGenerator = () => {
         estimatedViral: '85%'
       });
       setCurrentStep(4);
+      // Stop here - let user proceed manually to analytics
     }, 10000);
-    setTimeout(() => {
-      setCurrentStep(5);
-      setAnalytics({
-        views: '1.2M',
-        likes: '156K', 
-        shares: '23K',
-        viralScore: '78%'
-      });
-    }, 13000);
+  };
+
+  const proceedToAnalytics = () => {
+    setCurrentStep(5);
+    setAnalytics({
+      views: '1.2M',
+      likes: '156K', 
+      shares: '23K',
+      viralScore: '78%'
+    });
   };
 
   const resetProcess = () => {
@@ -79,6 +81,7 @@ export const useViralGenerator = () => {
     setGeneratedVideo,
     setAnalytics,
     startProcess,
+    proceedToAnalytics,
     resetProcess
   };
 };

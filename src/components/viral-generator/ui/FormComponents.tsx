@@ -13,19 +13,112 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageDimensions, setImageDimensions] = useState<{width: number, height: number} | null>(null);
 
   // Create image preview when file changes
   React.useEffect(() => {
     if (uploadedFile && uploadedFile.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string);
+        const result = e.target?.result as string;
+        setImagePreview(result);
+        
+        // Get image dimensions
+        const img = new Image();
+        img.onload = () => {
+          setImageDimensions({ width: img.width, height: img.height });
+        };
+        img.src = result;
       };
       reader.readAsDataURL(uploadedFile);
     } else {
       setImagePreview(null);
+      setImageDimensions(null);
     }
   }, [uploadedFile]);
+
+  const getOptimalUseCase = () => {
+    if (!imageDimensions) return '';
+    
+    const { width, height } = imageDimensions;
+    const aspectRatio = width / height;
+    
+    if (Math.abs(aspectRatio - 1) < 0.05) {
+      return 'Perfect for Instagram posts';
+    } else if (Math.abs(aspectRatio - 16/9) < 0.05) {
+      return 'Great for YouTube thumbnails';
+    } else if (Math.abs(aspectRatio - 9/16) < 0.05) {
+      return 'Ideal for TikTok & Instagram Stories';
+    } else if (aspectRatio > 1.5) {
+      return 'Good for banner ads';
+    } else if (aspectRatio < 0.67) {
+      return 'Perfect for mobile content';
+    } else {
+      return 'Versatile for social media';
+    }
+  };
+
+  const getImageDimensions = () => {
+    if (!imageDimensions) return 'Loading...';
+    
+    const { width, height } = imageDimensions;
+    const aspectRatio = width / height;
+    
+    // Determine image orientation and common ratios
+    let orientation = '';
+    let ratioLabel = '';
+    
+    // Check for common aspect ratios
+    if (Math.abs(aspectRatio - 1) < 0.05) {
+      ratioLabel = '1:1';
+      orientation = 'Square';
+    } else if (Math.abs(aspectRatio - 16/9) < 0.05) {
+      ratioLabel = '16:9';
+      orientation = 'Widescreen';
+    } else if (Math.abs(aspectRatio - 4/3) < 0.05) {
+      ratioLabel = '4:3';
+      orientation = 'Standard';
+    } else if (Math.abs(aspectRatio - 3/2) < 0.05) {
+      ratioLabel = '3:2';
+      orientation = 'Photo';
+    } else if (Math.abs(aspectRatio - 9/16) < 0.05) {
+      ratioLabel = '9:16';
+      orientation = 'Vertical';
+    } else if (aspectRatio > 1.5) {
+      orientation = 'Landscape';
+    } else if (aspectRatio < 0.67) {
+      orientation = 'Portrait';
+    } else if (aspectRatio > 1) {
+      orientation = 'Wide';
+    } else {
+      orientation = 'Tall';
+    }
+    
+    const displayText = ratioLabel ? 
+      `${width}×${height} (${ratioLabel})` : 
+      `${width}×${height} (${orientation})`;
+    
+    return displayText;
+  };
+
+  const getImageContainerStyle = () => {
+    if (!imageDimensions) return {};
+    
+    const { width, height } = imageDimensions;
+    const aspectRatio = width / height;
+    
+    // Adjust container based on aspect ratio
+    if (aspectRatio > 2) {
+      // Very wide images
+      return { maxHeight: '200px' };
+    } else if (aspectRatio < 0.5) {
+      // Very tall images
+      return { maxHeight: '400px', maxWidth: '300px' };
+    } else {
+      // Standard images
+      return { maxHeight: '320px' };
+    }
+  };
 
   const validateFile = (file: File): string | null => {
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -59,6 +152,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
 
   const handleRemoveImage = () => {
     setImagePreview(null);
+    setImageDimensions(null);
     setError(null);
     
     // Reset the file input
@@ -128,30 +222,63 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
         {imagePreview ? (
           // Image Preview Mode
           <div className="space-y-4 animate-in fade-in duration-500">
-            <div className="relative max-w-md mx-auto group">
-              <img 
-                src={imagePreview} 
-                alt="Product preview" 
-                className="w-full h-48 object-cover rounded-xl border-2 border-sage-green/30 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02]"
-              />
-              {/* Image overlay with gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative mx-auto group" style={getImageContainerStyle()}>
+              {/* Responsive image container */}
+              <div className="relative overflow-hidden rounded-xl border-2 border-sage-green/30 shadow-lg bg-white">
+                <img 
+                  src={imagePreview} 
+                  alt="Product preview" 
+                  className="w-full h-auto object-contain transition-all duration-300 group-hover:scale-105"
+                  style={{
+                    minHeight: '120px',
+                    ...getImageContainerStyle()
+                  }}
+                />
+                {/* Image overlay with gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
               
               {/* Remove button */}
               <button
                 onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 w-8 h-8 bg-coral-red hover:bg-coral-red/80 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-coral-red/50"
+                className="absolute -top-3 -right-3 w-10 h-10 bg-coral-red hover:bg-coral-red/80 text-white rounded-full flex items-center justify-center shadow-xl transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-coral-red/50 z-10"
                 type="button"
                 title="Remove image"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
+              
+              {/* Image dimension badge */}
+              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded-md text-xs font-medium backdrop-blur-sm">
+                {getImageDimensions()}
+              </div>
             </div>
             <div>
               <CheckCircle className="w-12 h-12 text-sage-green mx-auto mb-2" />
               <p className="text-deep-navy font-retro font-medium mb-2">Perfect! Your product image is ready</p>
-              <p className="text-deep-navy/70 text-sm">{uploadedFile?.name}</p>
-              <p className="text-deep-navy/50 text-xs">{uploadedFile ? (uploadedFile.size / 1024 / 1024).toFixed(2) : 0} MB</p>
+              
+              {/* Optimal use case banner */}
+              {getOptimalUseCase() && (
+                <div className="mb-4 mx-auto max-w-sm">
+                  <div className="bg-gradient-to-r from-electric-blue/10 to-sage-green/10 border border-electric-blue/20 rounded-lg px-4 py-2 text-center">
+                    <span className="text-electric-blue font-retro font-medium text-sm">
+                      ✨ {getOptimalUseCase()}
+                    </span>
+                  </div>
+                </div>
+              )}
+              
+              <div className="flex flex-wrap justify-center gap-4 text-sm">
+                <span className="bg-sage-green/10 text-sage-green px-3 py-1 rounded-full border border-sage-green/20">
+                  📁 {uploadedFile?.name}
+                </span>
+                <span className="bg-electric-blue/10 text-electric-blue px-3 py-1 rounded-full border border-electric-blue/20">
+                  📊 {uploadedFile ? (uploadedFile.size / 1024 / 1024).toFixed(2) : 0} MB
+                </span>
+                <span className="bg-sunshine-yellow/10 text-deep-navy px-3 py-1 rounded-full border border-sunshine-yellow/20">
+                  🖼️ {uploadedFile?.type.split('/')[1]?.toUpperCase()}
+                </span>
+              </div>
             </div>
           </div>
         ) : uploadedFile ? (

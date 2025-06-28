@@ -11,15 +11,36 @@ interface StepIndicatorProps {
   };
   isActive: boolean;
   isCompleted: boolean;
+  isClickable?: boolean;
+  onClick?: () => void;
 }
 
-export const StepIndicator: React.FC<StepIndicatorProps> = ({ step, isActive, isCompleted }) => {
+export const StepIndicator: React.FC<StepIndicatorProps> = ({ step, isActive, isCompleted, isClickable = false, onClick }) => {
   const Icon = step.icon;
   
+  const handleClick = () => {
+    if (isClickable && onClick) {
+      onClick();
+    }
+  };
+  
   return (
-    <div className={`relative flex flex-col items-center transition-all duration-500 w-24 sm:w-28 lg:w-32 ${
-      isActive ? 'scale-110' : isCompleted ? 'scale-105' : 'scale-95'
-    }`}>
+    <div 
+      className={`relative flex flex-col items-center transition-all duration-500 w-24 sm:w-28 lg:w-32 ${
+        isActive ? 'scale-110' : isCompleted ? 'scale-105' : 'scale-95'
+      } ${
+        isClickable ? 'cursor-pointer hover:scale-105' : 'cursor-default'
+      }`}
+      onClick={handleClick}
+      role={isClickable ? 'button' : 'presentation'}
+      tabIndex={isClickable ? 0 : -1}
+      onKeyDown={(e) => {
+        if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+    >
       <div className={`w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full flex items-center justify-center border-3 sm:border-4 transition-all duration-500 relative ${
         isCompleted 
           ? 'bg-gradient-to-r from-sage-green to-sunshine-yellow border-sage-green shadow-lg shadow-sage-green/30'

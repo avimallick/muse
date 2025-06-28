@@ -10,6 +10,7 @@ interface GeneratedVideo {
 
 interface StepSchedulingProps {
   generatedVideo: GeneratedVideo | null;
+  onProceedToAnalytics?: () => void;
 }
 
 export const StepScheduling: React.FC<StepSchedulingProps> = ({ generatedVideo }) => (
