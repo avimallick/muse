@@ -1,0 +1,38 @@
+import React from 'react';
+import { Upload } from 'lucide-react';
+
+// Debug component to test Upload icon
+export const DebugUploadIcon: React.FC = () => {
+  return (
+    <div className="p-8 bg-white rounded-lg shadow-lg max-w-md mx-auto mt-8">
+      <h3 className="text-lg font-bold mb-4">Debug: Upload Icon Test</h3>
+      
+      {/* Test different sizes and colors */}
+      <div className="space-y-4">
+        <div className="flex items-center space-x-4">
+          <Upload className="w-6 h-6 text-black" />
+          <span>Black Upload Icon (w-6 h-6)</span>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <Upload className="w-8 h-8 text-blue-600" />
+          <span>Blue Upload Icon (w-8 h-8)</span>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 bg-gradient-to-r from-electric-blue to-sunshine-yellow rounded-full flex items-center justify-center">
+            <Upload className="w-8 h-8 text-white" />
+          </div>
+          <span>White Upload Icon in gradient circle</span>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 bg-white border-2 border-gray-300 rounded-full flex items-center justify-center">
+            <Upload className="w-8 h-8 text-deep-navy" />
+          </div>
+          <span>Dark Upload Icon in white circle</span>
+        </div>
+      </div>
+    </div>
+  );
+};

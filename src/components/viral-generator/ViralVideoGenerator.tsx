@@ -2,6 +2,7 @@ import React from 'react';
 import { GridPattern, FloatingGeometry } from './layout/BackgroundElements';
 import { Header } from './layout/Header';
 import { StepIndicator, ProgressConnector } from './ui/ProgressComponents';
+import { MobileProgressBar } from './ui/MobileProgressBar';
 import { StepUpload } from './steps/StepUpload';
 import { StepResearch } from './steps/StepResearch';
 import { StepAnalysis } from './steps/StepAnalysis';
@@ -54,23 +55,72 @@ export const ViralVideoGenerator: React.FC = () => {
       
       <Header />
 
-      <div className="relative z-10 flex justify-center items-center space-x-12 mb-16 px-8">
-        {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
-            <StepIndicator 
-              step={step} 
-              isActive={state.currentStep === step.id}
-              isCompleted={state.currentStep > step.id}
-            />
-            {index < steps.length - 1 && (
-              <ProgressConnector isCompleted={state.currentStep > step.id} />
-            )}
-          </React.Fragment>
-        ))}
+      {/* Mobile Progress Bar */}
+      <MobileProgressBar currentStep={state.currentStep} totalSteps={steps.length} />
+
+      {/* Step Progress Container */}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Mobile: Vertical Steps */}
+          <div className="block sm:hidden space-y-4">
+            {steps.map((step) => (
+              <div key={step.id} className="flex items-center space-x-4 p-4 bg-white/70 rounded-xl backdrop-blur-sm">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                  state.currentStep > step.id
+                    ? 'bg-gradient-to-r from-sage-green to-sunshine-yellow border-sage-green'
+                    : state.currentStep === step.id
+                      ? `bg-gradient-to-r ${step.color} border-white shadow-lg`
+                      : 'bg-white border-gray-300'
+                }`}>
+                  <step.icon className={`w-6 h-6 ${
+                    state.currentStep >= step.id ? 'text-white' : 'text-gray-500'
+                  }`} />
+                </div>
+                <div className="flex-1">
+                  <div className={`font-retro font-semibold text-sm ${
+                    state.currentStep >= step.id ? 'text-electric-blue' : 'text-deep-navy/70'
+                  }`}>
+                    {step.title}
+                  </div>
+                  <div className={`text-xs ${
+                    state.currentStep >= step.id ? 'text-electric-blue/70' : 'text-deep-navy/50'
+                  }`}>
+                    {step.description}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Horizontal Steps */}
+          <div className="hidden sm:block">
+            <div className="flex justify-center items-center space-x-4 lg:space-x-6">
+              {steps.map((step, index) => (
+                <React.Fragment key={step.id}>
+                  <div className="flex-shrink-0">
+                    <StepIndicator 
+                      step={step} 
+                      isActive={state.currentStep === step.id}
+                      isCompleted={state.currentStep > step.id}
+                    />
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div className="flex-shrink-0">
+                      <ProgressConnector isCompleted={state.currentStep > step.id} />
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
-        {renderCurrentStep()}
+      {/* Main Content */}
+      <div className="relative z-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          {renderCurrentStep()}
+        </div>
       </div>
     </div>
   );

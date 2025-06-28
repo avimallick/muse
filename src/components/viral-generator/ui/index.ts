@@ -3,3 +3,4 @@ export * from './FormComponents';
 export * from './ProgressComponents';
 export * from './DisplayComponents';
 export * from './FeedbackComponents';
+export * from './MobileProgressBar';

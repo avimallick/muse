@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, AlertCircle, CheckCircle } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle, X } from 'lucide-react';
 import { GeometricAccent } from '../layout/BackgroundElements';
 import { Notification } from './FeedbackComponents';
 
@@ -12,6 +12,20 @@ interface FileUploadProps {
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className = "", uploadedFile }) => {
   const [dragActive, setDragActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Create image preview when file changes
+  React.useEffect(() => {
+    if (uploadedFile && uploadedFile.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(uploadedFile);
+    } else {
+      setImagePreview(null);
+    }
+  }, [uploadedFile]);
 
   const validateFile = (file: File): string | null => {
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -34,12 +48,30 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
       const validationError = validateFile(file);
       if (validationError) {
         setError(validationError);
+        setImagePreview(null);
         event.target.value = ''; // Clear the input
         return;
       }
       setError(null);
     }
     onFileChange(event);
+  };
+
+  const handleRemoveImage = () => {
+    setImagePreview(null);
+    setError(null);
+    
+    // Reset the file input
+    const fileInput = document.getElementById('upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+    
+    // Create a synthetic event to clear the file
+    const syntheticEvent = {
+      target: { files: null, value: '' }
+    } as React.ChangeEvent<HTMLInputElement>;
+    onFileChange(syntheticEvent);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -62,6 +94,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
       const validationError = validateFile(file);
       if (validationError) {
         setError(validationError);
+        setImagePreview(null);
         return;
       }
       setError(null);
@@ -92,7 +125,37 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
         <GeometricAccent type="circle" color="coral-red" />
         <GeometricAccent type="triangle" color="sage-green" position="bottom-4 left-4" />
         
-        {uploadedFile ? (
+        {imagePreview ? (
+          // Image Preview Mode
+          <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="relative max-w-md mx-auto group">
+              <img 
+                src={imagePreview} 
+                alt="Product preview" 
+                className="w-full h-48 object-cover rounded-xl border-2 border-sage-green/30 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02]"
+              />
+              {/* Image overlay with gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Remove button */}
+              <button
+                onClick={handleRemoveImage}
+                className="absolute -top-2 -right-2 w-8 h-8 bg-coral-red hover:bg-coral-red/80 text-white rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-coral-red/50"
+                type="button"
+                title="Remove image"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div>
+              <CheckCircle className="w-12 h-12 text-sage-green mx-auto mb-2" />
+              <p className="text-deep-navy font-retro font-medium mb-2">Perfect! Your product image is ready</p>
+              <p className="text-deep-navy/70 text-sm">{uploadedFile?.name}</p>
+              <p className="text-deep-navy/50 text-xs">{uploadedFile ? (uploadedFile.size / 1024 / 1024).toFixed(2) : 0} MB</p>
+            </div>
+          </div>
+        ) : uploadedFile ? (
+          // File Uploaded but No Preview (non-image files)
           <div className="space-y-4">
             <CheckCircle className="w-16 h-16 text-sage-green mx-auto" />
             <div>
@@ -102,6 +165,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
             </div>
           </div>
         ) : (
+          // Upload Prompt Mode
           <div className="space-y-4">
             <Upload className="w-16 h-16 text-electric-blue mx-auto" />
             <div>
@@ -124,7 +188,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileChange, className 
           htmlFor="upload" 
           className="cursor-pointer bg-gradient-to-r from-electric-blue to-sage-green hover:from-deep-navy hover:to-electric-blue text-white px-8 py-3 rounded-xl transition-all duration-300 font-retro font-medium inline-block shadow-lg mt-4"
         >
-          {uploadedFile ? 'Change Image' : 'Choose Image'}
+          {imagePreview ? 'Change Image' : uploadedFile ? 'Change File' : 'Choose Image'}
         </label>
       </div>
       

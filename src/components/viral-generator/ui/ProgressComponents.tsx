@@ -17,31 +17,37 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({ step, isActive, is
   const Icon = step.icon;
   
   return (
-    <div className={`relative flex flex-col items-center transition-all duration-500 ${
+    <div className={`relative flex flex-col items-center transition-all duration-500 w-24 sm:w-28 lg:w-32 ${
       isActive ? 'scale-110' : isCompleted ? 'scale-105' : 'scale-95'
     }`}>
-      <div className={`w-16 h-16 rounded-full flex items-center justify-center border-4 transition-all duration-500 relative ${
+      <div className={`w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full flex items-center justify-center border-3 sm:border-4 transition-all duration-500 relative ${
         isCompleted 
-          ? 'bg-gradient-to-r from-teal-400 to-yellow-400 border-teal-400 shadow-lg shadow-teal-400/30'
+          ? 'bg-gradient-to-r from-sage-green to-sunshine-yellow border-sage-green shadow-lg shadow-sage-green/30'
           : isActive 
-            ? `bg-gradient-to-r ${step.color} border-white shadow-lg shadow-blue-600/30 animate-pulse`
-            : 'bg-slate-100 border-gray-200'
+            ? `bg-gradient-to-r ${step.color} border-white shadow-lg shadow-electric-blue/30 animate-pulse`
+            : 'bg-white border-gray-300 shadow-md'
       }`}>
-        <Icon className={`w-8 h-8 ${isCompleted || isActive ? 'text-white' : 'text-slate-700'}`} />
-        <div className={`absolute -top-1 -right-1 w-3 h-3 rotate-45 ${
-          isActive ? 'bg-yellow-400' : isCompleted ? 'bg-red-500' : 'bg-gray-200'
+        <Icon className={`w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 ${
+          isCompleted || isActive ? 'text-white drop-shadow-sm' : 'text-deep-navy'
+        }`} />
+        <div className={`absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 rotate-45 ${
+          isActive ? 'bg-sunshine-yellow' : isCompleted ? 'bg-coral-red' : 'bg-gray-300'
         }`} />
       </div>
-      <span className={`mt-3 text-sm font-medium transition-colors duration-300 ${
-        isActive ? 'text-blue-600' : isCompleted ? 'text-teal-400' : 'text-slate-700'
+      
+      {/* Title */}
+      <div className={`mt-3 sm:mt-4 text-sm sm:text-base font-retro font-semibold text-center transition-colors duration-300 leading-tight ${
+        isActive ? 'text-electric-blue' : isCompleted ? 'text-sage-green' : 'text-deep-navy/70'
       }`}>
         {step.title}
-      </span>
-      <span className={`text-xs text-center max-w-24 transition-colors duration-300 ${
-        isActive ? 'text-blue-600' : isCompleted ? 'text-teal-400' : 'text-slate-500'
+      </div>
+      
+      {/* Description */}
+      <div className={`mt-1 text-xs sm:text-sm text-center leading-tight transition-colors duration-300 ${
+        isActive ? 'text-electric-blue/80' : isCompleted ? 'text-sage-green/80' : 'text-deep-navy/50'
       }`}>
         {step.description}
-      </span>
+      </div>
     </div>
   );
 };

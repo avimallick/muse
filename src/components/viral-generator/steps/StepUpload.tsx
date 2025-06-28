@@ -18,11 +18,11 @@ export const StepUpload: React.FC<StepUploadProps> = ({
   onTextChange, 
   onStart 
 }) => (
-  <Card className="max-w-2xl mx-auto">
+  <Card className="w-full max-w-4xl mx-auto">
     <CardHeader gradient="from-electric-blue to-sage-green" icon={Target}>
       Let's Make Your Product Go Viral!
     </CardHeader>
-    <div className="p-8 space-y-8">
+    <div className="p-6 sm:p-8 space-y-6 sm:space-y-8">
       <FileUpload onFileChange={onFileChange} uploadedFile={uploadedImage} />
       <TextArea
         value={textPrompt}
