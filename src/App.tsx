@@ -7,6 +7,7 @@ import ProjectsPage from '@/pages/ProjectsPage';
 import ProjectPage from '@/pages/ProjectPage';
 import CampaignPage from '@/pages/CampaignPage';
 import VideoStudioPage from '@/pages/VideoStudioPage';
+import ViralGeneratorPage from '@/pages/ViralGeneratorPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
 import SettingsPage from '@/pages/SettingsPage';
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/project/:projectId" element={<ProjectPage />} />
           <Route path="/project/:projectId/campaign/:campaignId" element={<CampaignPage />} />
           <Route path="/studio" element={<VideoStudioPage />} />
+          <Route path="/studio/viral-generator" element={<ViralGeneratorPage />} />
           <Route path="/calendar" element={<DashboardPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/automation" element={<DashboardPage />} />

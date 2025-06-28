@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,12 @@ import {
 } from 'lucide-react';
 
 export default function VideoStudioPage() {
+  const navigate = useNavigate();
+
+  const handleNewVideo = () => {
+    navigate('/studio/viral-generator');
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-cream-white">
@@ -29,7 +36,10 @@ export default function VideoStudioPage() {
                   Create and edit stunning videos with AI-powered tools
                 </p>
               </div>
-              <Button className="bg-electric-blue text-white hover:bg-electric-blue/90 border-2 border-deep-navy font-retro">
+              <Button 
+                onClick={handleNewVideo}
+                className="bg-electric-blue text-white hover:bg-electric-blue/90 border-2 border-deep-navy font-retro"
+              >
                 <VideoIcon className="mr-2 h-4 w-4" />
                 New Video
               </Button>
@@ -40,7 +50,10 @@ export default function VideoStudioPage() {
           <div>
             <h2 className="text-xl font-retro font-bold text-deep-navy mb-4">Quick Actions</h2>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="bg-white border-2 border-deep-navy/10 hover:border-electric-blue/50 hover:shadow-lg transition-all group cursor-pointer">
+              <Card 
+                className="bg-white border-2 border-deep-navy/10 hover:border-electric-blue/50 hover:shadow-lg transition-all group cursor-pointer"
+                onClick={handleNewVideo}
+              >
                 <CardContent className="p-6 text-center">
                   <div className="h-16 w-16 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform border-2 border-deep-navy">
                     <Wand2 className="h-8 w-8 text-white" />
