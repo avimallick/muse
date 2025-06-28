@@ -1,3 +1,5 @@
+```mermaid
+
 flowchart TD
     A[🚀 Start: User Input] --> A1[Product Image + Text Prompt]
     
