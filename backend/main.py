@@ -6,6 +6,7 @@ from typing import List
 import uuid
 import os
 from flow1_memegen import generate_meme_ideas
+from flow2_generate import generate_ad
 
 app = FastAPI()
 
@@ -28,6 +29,13 @@ class MemeIdea(BaseModel):
     audio_script: str
     video_prompt: str
 
+class AdGenerationRequest(BaseModel):
+    audio_script: str
+    video_prompt: str
+
+class AdGenerationResponse(BaseModel):
+    video_path: str
+
 @app.post("/ideas/", response_model=List[MemeIdea])
 def meme_idea_endpoint(data: MemeIdeaRequest):
     return generate_meme_ideas(
@@ -35,3 +43,8 @@ def meme_idea_endpoint(data: MemeIdeaRequest):
         product_description=data.product_description,
         image_path=data.image_filename
     )
+
+@app.post("/generate/", response_model=AdGenerationResponse)
+def ad_generation_endpoint(data: AdGenerationRequest):
+    output_path = generate_ad(data.audio_script, data.video_prompt, output_name="final_ad.mp4")
+    return {"video_path": output_path}
