@@ -9,7 +9,7 @@ from langchain_core.outputs import LLMResult
 from langgraph.graph import END, StateGraph
 from langchain.prompts import PromptTemplate
 from langchain_core.runnables import RunnableLambda
-from langchain.vectorstores import Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_mistralai.embeddings import MistralAIEmbeddings
 from langchain.schema.runnable import Runnable
 from langchain.memory import SimpleMemory
