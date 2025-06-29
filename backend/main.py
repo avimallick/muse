@@ -48,3 +48,11 @@ def meme_idea_endpoint(data: MemeIdeaRequest):
 def ad_generation_endpoint(data: AdGenerationRequest):
     output_path = generate_ad(data.audio_script, data.video_prompt, output_name="final_ad.mp4")
     return {"video_path": output_path}
+
+@app.post("/upload/")
+async def upload_image(file: UploadFile):
+    os.makedirs("uploads", exist_ok=True)
+    save_path = f"uploads/{file.filename}"
+    with open(save_path, "wb") as f:
+        f.write(await file.read())
+    return {"saved_path": os.path.abspath(save_path)}
